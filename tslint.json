@@ -5,6 +5,12 @@
         "tslint-config-airbnb"
     ],
     "jsRules": {},
-    "rules": {},
+    "rules": {
+        "max-line-length": false,
+        "object-literal-sort-keys": false,
+        "ordered-imports": false,
+        "ter-arrow-parens": false,
+        "member-ordering": false
+    },
     "rulesDirectory": []
 }
