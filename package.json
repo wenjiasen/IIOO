@@ -1,0 +1,29 @@
+{
+  "name": "iioo",
+  "version": "0.1.0",
+  "description": "IIOO",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wenjiasen/IIOO.git"
+  },
+  "keywords": [
+    "iioo"
+  ],
+  "author": "Jason",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wenjiasen/IIOO/issues"
+  },
+  "homepage": "https://github.com/wenjiasen/IIOO#readme",
+  "devDependencies": {
+    "prettier": "^1.18.2",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.20.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "typescript": "^3.6.3"
+  }
+}
