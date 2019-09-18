@@ -1,5 +1,5 @@
 {
-  "name": "iioo",
+  "name": "@wenjs/iioo",
   "version": "0.1.0",
   "description": "IIOO",
   "main": "./dist/index.js",
