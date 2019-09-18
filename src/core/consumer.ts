@@ -1,10 +1,11 @@
 import { validTopicName } from './common';
 import { Logger } from '../utils/logger';
-import { IStroe } from './store';
+import { IStore } from './store';
+import { IListenerInfo } from './listener';
 
 export class Consumer {
-  private storeClient: IStroe;
-  constructor(store: IStroe) {
+  private storeClient: IStore;
+  constructor(store: IStore) {
     this.storeClient = store;
   }
 
@@ -16,7 +17,7 @@ export class Consumer {
    * @param topicName
    * @param listener
    */
-  public async subscription(topicName: string, listener: IIOO.Listener.IInfo) {
+  public async subscription(topicName: string, listener: IListenerInfo) {
     // check
     validTopicName(validTopicName);
     const isHas = await this.storeClient.topic.has(topicName);

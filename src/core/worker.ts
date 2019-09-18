@@ -1,22 +1,25 @@
 import { EventEmitter } from 'events';
 import { Logger } from '../utils/logger';
 import requestPromise from 'request-promise';
-type SuccessHandler = (job: IIOO.Job.IInfo, result?: any) => void;
-type FailedHandler = (error: Error, job: IIOO.Job.IInfo, result?: any) => void;
+import { IJobInfo } from './job';
+import { IListenerInfo } from './listener';
+type SuccessHandler = (job: IJobInfo, result?: any) => void;
+type FailedHandler = (error: Error, job: IJobInfo, result?: any) => void;
 
 export class QueueWorker extends EventEmitter {
   public readonly wokerMaxJob: number;
-  private readonly listener: IIOO.Listener.IInfo;
+  private readonly listener: IListenerInfo;
   public executingJobs: Set<string> = new Set();
   private jobSuccessHandler?: SuccessHandler;
   private jobFailedHandler?: FailedHandler;
-  constructor(listener: IIOO.Listener.IInfo, wokerMaxJob = 10) {
+
+  constructor(listener: IListenerInfo, wokerMaxJob = 10) {
     super();
     this.wokerMaxJob = wokerMaxJob;
     this.listener = listener;
   }
 
-  // private async callRemote(job: IIOO.Job.IInfo) {
+  // private async callRemote(job: IJobInfo) {
   //   const resp: Response = await ;
   //   if (resp.status < 300 && resp.status >= 200) {
   //     this.jobSuccess(job, resp.body);
@@ -25,17 +28,17 @@ export class QueueWorker extends EventEmitter {
   //   }
   // }
 
-  private jobSuccess(job: IIOO.Job.IInfo, result?: any) {
+  private jobSuccess(job: IJobInfo, result?: any) {
     // tslint:disable-next-line:no-unused-expression
     this.jobSuccessHandler && this.jobSuccessHandler(job, result);
   }
 
-  private jobFailed(error: Error, job: IIOO.Job.IInfo, result?: any) {
+  private jobFailed(error: Error, job: IJobInfo, result?: any) {
     // tslint:disable-next-line:no-unused-expression
     this.jobFailedHandler && this.jobFailedHandler(error, job, result);
   }
 
-  public execute(job: IIOO.Job.IInfo) {
+  public execute(job: IJobInfo) {
     this.executingJobs.add(job.id);
     try {
       // 发起请求

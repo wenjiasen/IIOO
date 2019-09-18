@@ -1,20 +1,21 @@
 import { Logger } from '../utils/logger';
 import { validTopicName } from './common';
-import { IStroe } from './store';
+import { IStore } from './store';
+import { ITopicNew, ITopicInfo } from './topic';
 
 class Admin {
   /**
    * store
    */
-  private storeClient: IStroe;
-  constructor(store: IStroe) {
+  private storeClient: IStore;
+  constructor(store: IStore) {
     this.storeClient = store;
   }
   /**
    * create a new topic
    * @param newTopic
    */
-  public async createTopic(newTopic: IIOO.Topic.INewTopic): Promise<IIOO.Topic.IInfo | undefined> {
+  public async createTopic(newTopic: ITopicNew): Promise<ITopicInfo | undefined> {
     try {
       // check
       validTopicName(newTopic.name);
@@ -50,7 +51,7 @@ class Admin {
    * describe topic by name
    * @param name
    */
-  public async describeTopic(name: string): Promise<IIOO.Topic.IInfo | undefined> {
+  public async describeTopic(name: string): Promise<ITopicInfo | undefined> {
     try {
       validTopicName(name);
       const result = this.storeClient.topic.findByName(name);
@@ -65,8 +66,8 @@ class Admin {
    * @param page
    * @param pageSize
    */
-  public async listTopics(page: number = 1, pageSize: number = 10): Promise<IIOO.Topic.IInfo[]> {
-    let results: IIOO.Topic.IInfo[] = [];
+  public async listTopics(page: number = 1, pageSize: number = 10): Promise<ITopicInfo[]> {
+    let results: ITopicInfo[] = [];
     try {
       results = await this.storeClient.topic.list({
         offset: (page - 1) * pageSize,

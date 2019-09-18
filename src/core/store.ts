@@ -1,17 +1,25 @@
-export interface IStroe {
+import { IJobNew, IJobInfo } from './job';
+import { ITopicInfo, ITopicNew } from './topic';
+import { IListenerInfo } from './listener';
+interface ISearchListOpts {
+  offset: number;
+  limit: number;
+}
+
+export interface IStore {
   topic: {
-    save: (newTopic: IIOO.Topic.INewTopic) => Promise<IIOO.Topic.IInfo>;
+    save: (newTopic: ITopicNew) => Promise<ITopicInfo>;
     delete: (name: string) => Promise<boolean>;
     has: (name: string) => Promise<boolean>;
-    findByName: (name: string) => Promise<IIOO.Topic.IInfo | undefined>;
-    list: (opts?: IIOO.Common.ISearchListOpts) => Promise<IIOO.Topic.IInfo[]>;
-    subscription: (topicName: string, listener: IIOO.Listener.IInfo) => Promise<boolean>;
+    findByName: (name: string) => Promise<ITopicInfo | undefined>;
+    list: (opts?: ISearchListOpts) => Promise<ITopicInfo[]>;
+    subscription: (topicName: string, listener: IListenerInfo) => Promise<boolean>;
     unSubscription: (topicName: string, name: string) => Promise<boolean>;
   };
   job: {
-    save: (newJob: IIOO.Job.INew) => Promise<IIOO.Job.IInfo>;
+    save: (newJob: IJobNew) => Promise<IJobInfo>;
     delete: (id: string) => Promise<boolean>;
-    findById: (id: string) => Promise<IIOO.Job.IInfo | undefined>;
-    getTopicJobs: (topicName: string) => Promise<IIOO.Job.IInfo[]>;
+    findById: (id: string) => Promise<IJobInfo | undefined>;
+    getTopicJobs: (topicName: string) => Promise<IJobInfo[]>;
   };
 }

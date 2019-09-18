@@ -1,20 +1,21 @@
 import { validTopicName } from './common';
 import { Logger } from '../utils/logger';
-import { IStroe } from './store';
+import { IStore } from './store';
+import { IJobNew, IJobInfo } from './job';
 
 /**
  * Producer
  */
 export class Producer {
-  private storeClient: IStroe;
-  constructor(store: IStroe) {
+  private storeClient: IStore;
+  constructor(store: IStore) {
     this.storeClient = store;
   }
   /**
    * Crate a job
    * @param job
    */
-  public async createJob(newJob: IIOO.Job.INew): Promise<IIOO.Job.IInfo> {
+  public async createJob(newJob: IJobNew): Promise<IJobInfo> {
     validTopicName(newJob.topicName);
     // TODO:控制过大的输入
     // TODO:控制空输入

@@ -1,4 +1,7 @@
 import { Engine } from './core/engine';
-import { IStroe } from './core/store';
+import { IStore } from './core/store';
+import { ITopicInfo, ITopicNew } from './core/topic';
+import { IJobInfo, IJobNew } from './core/job';
+import { IListenerInfo } from './core/listener';
 
-export { Engine, IStroe };
+export { Engine, IStore, IJobInfo, IJobNew, ITopicInfo, ITopicNew, IListenerInfo };
