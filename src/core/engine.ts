@@ -1,9 +1,10 @@
 import { Queue } from './queue';
+import { IStroe } from './store';
 
 export class Engine {
-  private readonly sotre: IIOO.Store.IStroe;
+  private readonly sotre: IStroe;
   private readonly queues: Queue[];
-  constructor(store: IIOO.Store.IStroe) {
+  constructor(store: IStroe) {
     this.sotre = store;
     this.queues = [];
   }

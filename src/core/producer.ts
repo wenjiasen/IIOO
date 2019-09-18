@@ -1,12 +1,13 @@
 import { validTopicName } from './common';
 import { Logger } from '../utils/logger';
+import { IStroe } from './store';
 
 /**
  * Producer
  */
 export class Producer {
-  private storeClient: IIOO.Store.IStroe;
-  constructor(store: IIOO.Store.IStroe) {
+  private storeClient: IStroe;
+  constructor(store: IStroe) {
     this.storeClient = store;
   }
   /**

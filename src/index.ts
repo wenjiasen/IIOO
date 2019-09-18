@@ -1,7 +1,4 @@
 import { Engine } from './core/engine';
-import { MongoDBStore } from './store/mongodb';
+import { IStroe } from './core/store';
 
-// 初始化一个engine
-const engine = new Engine(new MongoDBStore());
-// 开始engine
-engine.start();
+export { Engine, IStroe };

@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import { QueueWorker } from './worker';
 import { Logger } from '../utils/logger';
+import { IStroe } from './store';
 enum QueueEvent {
   GetMoreJobs = 'getMoreJobs',
   Execute = 'execute',
@@ -12,9 +13,9 @@ export class Queue {
   private inGetMore = false;
   private jobs: IIOO.Job.IInfo[] = [];
   private workers: QueueWorker[] = [];
-  private store: IIOO.Store.IStroe;
+  private store: IStroe;
   private topic: IIOO.Topic.IInfo;
-  constructor(store: IIOO.Store.IStroe, topic: IIOO.Topic.IInfo) {
+  constructor(store: IStroe, topic: IIOO.Topic.IInfo) {
     this.core = new EventEmitter();
     this.core.on(QueueEvent.Loop, this.onLoop.bind(this));
     this.core.on(QueueEvent.GetMoreJobs, this.onGetMoreJobs.bind(this));

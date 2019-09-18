@@ -1,9 +1,10 @@
 import { validTopicName } from './common';
 import { Logger } from '../utils/logger';
+import { IStroe } from './store';
 
 export class Consumer {
-  private storeClient: IIOO.Store.IStroe;
-  constructor(store: IIOO.Store.IStroe) {
+  private storeClient: IStroe;
+  constructor(store: IStroe) {
     this.storeClient = store;
   }
 

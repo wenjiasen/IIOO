@@ -1,12 +1,13 @@
 import { Logger } from '../utils/logger';
 import { validTopicName } from './common';
+import { IStroe } from './store';
 
 class Admin {
   /**
    * store
    */
-  private storeClient: IIOO.Store.IStroe;
-  constructor(store: IIOO.Store.IStroe) {
+  private storeClient: IStroe;
+  constructor(store: IStroe) {
     this.storeClient = store;
   }
   /**
