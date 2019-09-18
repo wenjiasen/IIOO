@@ -20,6 +20,9 @@
   "bugs": {
     "url": "https://github.com/wenjiasen/IIOO/issues"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "https://github.com/wenjiasen/IIOO#readme",
   "devDependencies": {
     "@types/node": "^12.7.5",
