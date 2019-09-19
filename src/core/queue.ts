@@ -83,23 +83,21 @@ export class Queue {
     return nextJob;
   }
 
-  private onLoop() {
+  private async onLoop() {
     const freeWoker = this.getFreeWorker();
     if (!freeWoker) return;
 
     // 获取下一个任务
     const job = this.getNextJob();
     if (!job) return;
-
-    // 设置Job状态
-    this.lockJob(job)
-      .then(() => {
-        // 分配woker执行
-        freeWoker.execute(job);
-      })
-      .finally(() => {
-        // 重复执行，直到没有空闲的woker,然后等待job完成事件唤起
-        this.loop();
-      });
+    try {
+      await this.lockJob(job);
+      freeWoker.execute(job);
+    } catch (error) {
+      Logger.error(error);
+    } finally {
+      // 重复执行，直到没有空闲的woker,然后等待job完成事件唤起
+      this.loop();
+    }
   }
 }

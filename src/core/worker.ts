@@ -6,6 +6,10 @@ import { IListenerInfo } from './listener';
 type SuccessHandler = (job: IJobInfo, result?: any) => void;
 type FailedHandler = (error: Error, job: IJobInfo, result?: any) => void;
 
+enum WorkerEvent {
+  ExecuteJob = 'ExecuteJob',
+}
+
 export class QueueWorker extends EventEmitter {
   public readonly wokerMaxJob: number;
   private readonly listener: IListenerInfo;
@@ -17,16 +21,8 @@ export class QueueWorker extends EventEmitter {
     super();
     this.wokerMaxJob = wokerMaxJob;
     this.listener = listener;
+    this.addListener(WorkerEvent.ExecuteJob, this.jobExecute);
   }
-
-  // private async callRemote(job: IJobInfo) {
-  //   const resp: Response = await ;
-  //   if (resp.status < 300 && resp.status >= 200) {
-  //     this.jobSuccess(job, resp.body);
-  //   } else {
-  //     this.jobFailed(new Error('worker error!'), job, resp.body);
-  //   }
-  // }
 
   private jobSuccess(job: IJobInfo, result?: any) {
     // tslint:disable-next-line:no-unused-expression
@@ -38,33 +34,27 @@ export class QueueWorker extends EventEmitter {
     this.jobFailedHandler && this.jobFailedHandler(error, job, result);
   }
 
-  public execute(job: IJobInfo) {
-    this.executingJobs.add(job.id);
+  private async jobExecute(job: IJobInfo) {
+    //
     try {
-      // 发起请求
-      requestPromise
-        .post(this.listener.url, {
-          json: job,
-        })
-        .then((resp) => {
-          //
-          if (resp.status < 300 && resp.status >= 200) {
-            this.jobSuccess(job, resp.body);
-          } else {
-            this.jobFailed(new Error('worker error!'), job, resp.body);
-          }
-        })
-        .error((error) => {
-          Logger.error(error);
-        })
-        .finally(() => {
-          this.executingJobs.delete(job.id);
-        });
-      // 响应处理
+      const result = await requestPromise.post(this.listener.url, {
+        json: job,
+      });
+      if (result.status < 300 && result.status >= 200) {
+        this.jobSuccess(job, result.body);
+      } else {
+        this.jobFailed(new Error('worker error!'), job, result.body);
+      }
     } catch (error) {
       Logger.error(error);
+    } finally {
       this.executingJobs.delete(job.id);
     }
+  }
+
+  public execute(job: IJobInfo) {
+    this.executingJobs.add(job.id);
+    this.emit(WorkerEvent.ExecuteJob, job);
   }
 
   public onJobSuccess(handler: SuccessHandler) {
