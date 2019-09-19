@@ -1,12 +1,12 @@
 {
   "name": "@wenjs/iioo",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "IIOO",
   "main": "./dist/index.js",
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf ./dist/*",
-    "patch":"npm run build && npm version patch && npm publish",
+    "patch": "npm run build && npm version patch && npm publish",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
