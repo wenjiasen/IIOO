@@ -38,7 +38,7 @@ export class Queue {
         await this.store.job.finish(job.id, result);
       });
 
-      workerCore.onJobFailed(async (err, job, result) => {
+      workerCore.onJobFailed(async (err, job) => {
         await this.store.job.failed(job.id, err.message);
       });
 
@@ -55,7 +55,7 @@ export class Queue {
 
   private getFreeWorker(): QueueWorker | undefined {
     const index = this.workers.findIndex((worker) => {
-      return worker.executingJobs.size <= worker.wokerMaxJob;
+      return worker.isFree();
     });
     if (index >= 0) {
       return this.workers[index];

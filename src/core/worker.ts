@@ -4,22 +4,26 @@ import requestPromise from 'request-promise';
 import { IJobInfo } from './job';
 import { IListenerInfo } from './listener';
 type SuccessHandler = (job: IJobInfo, result?: any) => void;
-type FailedHandler = (error: Error, job: IJobInfo, result?: any) => void;
+type FailedHandler = (error: Error, job: IJobInfo) => void;
 
 enum WorkerEvent {
   ExecuteJob = 'ExecuteJob',
 }
 
+interface IQueueWorkerOption {
+  maxJob: number;
+}
+
 export class QueueWorker extends EventEmitter {
-  public readonly wokerMaxJob: number;
+  private executingJobs: Set<string> = new Set();
   private readonly listener: IListenerInfo;
-  public executingJobs: Set<string> = new Set();
   private jobSuccessHandler?: SuccessHandler;
   private jobFailedHandler?: FailedHandler;
+  private options: IQueueWorkerOption;
 
-  constructor(listener: IListenerInfo, wokerMaxJob = 10) {
+  constructor(listener: IListenerInfo, options: IQueueWorkerOption = { maxJob: 10 }) {
     super();
-    this.wokerMaxJob = wokerMaxJob;
+    this.options = options;
     this.listener = listener;
     this.addListener(WorkerEvent.ExecuteJob, this.jobExecute);
   }
@@ -28,8 +32,8 @@ export class QueueWorker extends EventEmitter {
     this.jobSuccessHandler && this.jobSuccessHandler(job, result);
   }
 
-  private jobFailed(error: Error, job: IJobInfo, result?: any) {
-    this.jobFailedHandler && this.jobFailedHandler(error, job, result);
+  private jobFailed(error: Error, job: IJobInfo) {
+    this.jobFailedHandler && this.jobFailedHandler(error, job);
   }
 
   private async jobExecute(job: IJobInfo) {
@@ -39,11 +43,15 @@ export class QueueWorker extends EventEmitter {
       });
       this.jobSuccess(job, result.body);
     } catch (error) {
-      this.jobFailed(new Error('execute error!'), job, error);
+      this.jobFailed(error, job);
       Logger.error(error);
     } finally {
       this.executingJobs.delete(job.id);
     }
+  }
+
+  public isFree() {
+    return this.executingJobs.size <= this.options.maxJob;
   }
 
   public execute(job: IJobInfo) {
