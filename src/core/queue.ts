@@ -46,7 +46,7 @@ export class Queue {
     }
   }
   private async lockJob(job: IJobInfo) {
-    await this.store.job.updateState(job.id, JobState.Executing);
+    return await this.store.job.executeLock(job.id);
   }
 
   private getMoreJob() {
@@ -84,6 +84,7 @@ export class Queue {
   }
 
   private async onLoop() {
+    // TODO:目前的处理方式无法保证任务执行顺序，待优化
     const freeWoker = this.getFreeWorker();
     if (!freeWoker) return;
 
@@ -91,7 +92,9 @@ export class Queue {
     const job = this.getNextJob();
     if (!job) return;
     try {
-      await this.lockJob(job);
+      // 如果锁定失败，则此任务有可能已被执行，则跳过
+      const isLock = await this.lockJob(job);
+      if (!isLock) return;
       freeWoker.execute(job);
     } catch (error) {
       Logger.error(error);

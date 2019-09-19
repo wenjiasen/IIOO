@@ -8,7 +8,7 @@ interface ISearchListOpts {
 
 export interface IStore {
   topic: {
-    save: (newTopic: ITopicNew) => Promise<ITopicInfo>;
+    create: (newTopic: ITopicNew) => Promise<ITopicInfo>;
     delete: (name: string) => Promise<boolean>;
     has: (name: string) => Promise<boolean>;
     findByName: (name: string) => Promise<ITopicInfo | undefined>;
@@ -17,12 +17,22 @@ export interface IStore {
     unSubscription: (topicName: string, name: string) => Promise<boolean>;
   };
   job: {
-    save: (newJob: IJobNew) => Promise<IJobInfo>;
+    create: (newJob: IJobNew) => Promise<IJobInfo>;
     delete: (id: string) => Promise<boolean>;
     findById: (id: string) => Promise<IJobInfo | undefined>;
-    getTopicJobs: (topicName: string) => Promise<IJobInfo[]>;
-    updateState: (id: string, state: JobState) => Promise<boolean>;
+    getTopicJobs: (topicName: string, opts?: ISearchListOpts) => Promise<IJobInfo[]>;
+
+    /**
+     * 任务执行锁定，防止多实例重复执行同一个任务
+     */
+    executeLock: (id: string) => Promise<boolean>;
+    /**
+     * 任务完成处理
+     */
     finish: (id: string, result: any) => Promise<boolean>;
+    /**
+     * 任务失败处理
+     */
     failed: (id: string, errorMsg: string) => Promise<boolean>;
   };
 }

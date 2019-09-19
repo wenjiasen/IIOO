@@ -26,7 +26,7 @@ class Admin {
         throw new Error(`${newTopic.name} already exists`);
       }
 
-      const topic = await this.storeClient.topic.save(newTopic);
+      const topic = await this.storeClient.topic.create(newTopic);
       return topic;
     } catch (error) {
       Logger.error(error);

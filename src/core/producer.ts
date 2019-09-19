@@ -20,7 +20,7 @@ export class Producer {
     // TODO:控制过大的输入
     // TODO:控制空输入
     try {
-      const result = await this.storeClient.job.save(newJob);
+      const result = await this.storeClient.job.create(newJob);
       return result;
     } catch (error) {
       Logger.error(error);
