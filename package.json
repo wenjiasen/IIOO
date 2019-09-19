@@ -1,6 +1,6 @@
 {
   "name": "@wenjs/iioo",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "IIOO",
   "main": "./dist/index.js",
   "scripts": {
