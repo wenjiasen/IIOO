@@ -41,7 +41,7 @@ export class QueueWorker extends EventEmitter {
       const result = await requestPromise.post(this.listener.url, {
         json: job,
       });
-      this.jobSuccess(job, result.body);
+      this.jobSuccess(job, result);
     } catch (error) {
       this.jobFailed(error, job);
       Logger.error(error);
