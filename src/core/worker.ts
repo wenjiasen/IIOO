@@ -25,27 +25,21 @@ export class QueueWorker extends EventEmitter {
   }
 
   private jobSuccess(job: IJobInfo, result?: any) {
-    // tslint:disable-next-line:no-unused-expression
     this.jobSuccessHandler && this.jobSuccessHandler(job, result);
   }
 
   private jobFailed(error: Error, job: IJobInfo, result?: any) {
-    // tslint:disable-next-line:no-unused-expression
     this.jobFailedHandler && this.jobFailedHandler(error, job, result);
   }
 
   private async jobExecute(job: IJobInfo) {
-    //
     try {
       const result = await requestPromise.post(this.listener.url, {
         json: job,
       });
-      if (result.status < 300 && result.status >= 200) {
-        this.jobSuccess(job, result.body);
-      } else {
-        this.jobFailed(new Error('worker error!'), job, result.body);
-      }
+      this.jobSuccess(job, result.body);
     } catch (error) {
+      this.jobFailed(new Error('execute error!'), job, error);
       Logger.error(error);
     } finally {
       this.executingJobs.delete(job.id);
