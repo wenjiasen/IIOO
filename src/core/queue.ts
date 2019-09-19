@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { QueueWorker } from './worker';
 import { Logger } from '../utils/logger';
 import { IStore } from './store';
-import { IJobInfo } from './job';
+import { IJobInfo, JobState } from './job';
 import { ITopicInfo } from './topic';
 enum QueueEvent {
   GetMoreJobs = 'getMoreJobs',
@@ -33,14 +33,20 @@ export class Queue {
   private bindWorker() {
     for (const listener of this.topic.listener) {
       const workerCore = new QueueWorker(listener);
-      workerCore.onJobSuccess((job, result) => {
-        // TODO
+
+      workerCore.onJobSuccess(async (job, result) => {
+        await this.store.job.finish(job.id, result);
       });
-      workerCore.onJobFailed((err, job, result) => {
-        // TODO
+
+      workerCore.onJobFailed(async (err, job, result) => {
+        await this.store.job.failed(job.id, err.message);
       });
+
       this.workers.push(workerCore);
     }
+  }
+  private async lockJob(job: IJobInfo) {
+    await this.store.job.updateState(job.id, JobState.Executing);
   }
 
   private getMoreJob() {
@@ -85,10 +91,15 @@ export class Queue {
     const job = this.getNextJob();
     if (!job) return;
 
-    // 分配woker执行
-    freeWoker.execute(job);
-
-    // 重复执行，直到没有空闲的woker,，然后等待job完成事件唤起
-    this.loop();
+    // 设置Job状态
+    this.lockJob(job)
+      .then(() => {
+        // 分配woker执行
+        freeWoker.execute(job);
+      })
+      .finally(() => {
+        // 重复执行，直到没有空闲的woker,然后等待job完成事件唤起
+        this.loop();
+      });
   }
 }

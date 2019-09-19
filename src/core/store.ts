@@ -1,4 +1,4 @@
-import { IJobNew, IJobInfo } from './job';
+import { IJobNew, IJobInfo, JobState } from './job';
 import { ITopicInfo, ITopicNew } from './topic';
 import { IListenerInfo } from './listener';
 interface ISearchListOpts {
@@ -21,5 +21,8 @@ export interface IStore {
     delete: (id: string) => Promise<boolean>;
     findById: (id: string) => Promise<IJobInfo | undefined>;
     getTopicJobs: (topicName: string) => Promise<IJobInfo[]>;
+    updateState: (id: string, state: JobState) => Promise<boolean>;
+    finish: (id: string, result: any) => Promise<boolean>;
+    failed: (id: string, errorMsg: string) => Promise<boolean>;
   };
 }
