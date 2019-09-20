@@ -25,7 +25,7 @@ export class Queue {
     this.store = store;
     this.topic = topic;
     this.bindWorker();
-    setInterval(this.loop, 10000);
+    setInterval(this.loop.bind(this), 10000);
   }
 
   public loop() {
