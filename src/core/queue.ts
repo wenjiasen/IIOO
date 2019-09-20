@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { QueueWorker } from './worker';
 import { Logger } from '../utils/logger';
-import { IStore } from './store';
+import { IEngineStore } from './store/engine';
 import { IJobInfo, JobState } from './job';
 import { ITopicInfo } from './topic';
 enum QueueEvent {
@@ -16,9 +16,9 @@ export class Queue {
   private inLoop = false;
   private jobs: IJobInfo[] = [];
   private workers: QueueWorker[] = [];
-  private store: IStore;
+  private store: IEngineStore;
   private topic: ITopicInfo;
-  constructor(store: IStore, topic: ITopicInfo) {
+  constructor(store: IEngineStore, topic: ITopicInfo) {
     this.core = new EventEmitter();
     this.core.on(QueueEvent.Loop, this.onLoop.bind(this));
     this.core.on(QueueEvent.GetMoreJobs, this.onGetMoreJobs.bind(this));
@@ -39,18 +39,18 @@ export class Queue {
       const workerCore = new QueueWorker(listener);
 
       workerCore.onJobSuccess(async (job, result) => {
-        await this.store.job.finish(job.id, result);
+        await this.store.finishJob(job.id, result);
       });
 
       workerCore.onJobFailed(async (err, job) => {
-        await this.store.job.failed(job.id, err.message);
+        await this.store.failedJob(job.id, err.message);
       });
 
       this.workers.push(workerCore);
     }
   }
   private async lockJob(job: IJobInfo) {
-    return await this.store.job.executeLock(job.id);
+    return await this.store.executeLockJob(job.id);
   }
 
   private getMoreJob() {
@@ -71,7 +71,7 @@ export class Queue {
     if (this.inGetMore) return;
     this.inGetMore = true;
     try {
-      const jobs = await this.store.job.getTopicJobs(this.topic.name);
+      const jobs = await this.store.getWaitingJobs(this.topic.name);
       this.jobs = this.jobs.concat(jobs || []);
       this.loop();
     } catch (error) {

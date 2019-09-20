@@ -4,13 +4,13 @@ export interface IJobNew {
 }
 export interface IJobInfo {
   id: string;
-  state: JobState;
+  status: JobState;
   topicName: string;
   payload: any;
 }
 
 export enum JobState {
-  Wating = 0,
+  Waiting = 0,
   Executing = 1,
   Success = 2,
   Failed = 3,

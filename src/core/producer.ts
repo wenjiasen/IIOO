@@ -1,14 +1,14 @@
 import { validTopicName } from './common';
 import { Logger } from '../utils/logger';
-import { IStore } from './store';
+import { IProducerStore } from './store/producer';
 import { IJobNew, IJobInfo } from './job';
 
 /**
  * Producer
  */
 export class Producer {
-  private storeClient: IStore;
-  constructor(store: IStore) {
+  private storeClient: IProducerStore;
+  constructor(store: IProducerStore) {
     this.storeClient = store;
   }
   /**
@@ -20,7 +20,7 @@ export class Producer {
     // TODO:控制过大的输入
     // TODO:控制空输入
     try {
-      const result = await this.storeClient.job.create(newJob);
+      const result = await this.storeClient.createJob(newJob);
       return result;
     } catch (error) {
       Logger.error(error);

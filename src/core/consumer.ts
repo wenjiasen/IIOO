@@ -1,11 +1,11 @@
 import { validTopicName } from './common';
 import { Logger } from '../utils/logger';
-import { IStore } from './store';
+import { IConsumerStore } from './store/consumer';
 import { IListenerInfo } from './listener';
 
 export class Consumer {
-  private storeClient: IStore;
-  constructor(store: IStore) {
+  private storeClient: IConsumerStore;
+  constructor(store: IConsumerStore) {
     this.storeClient = store;
   }
 
@@ -20,10 +20,10 @@ export class Consumer {
   public async subscription(topicName: string, listener: IListenerInfo) {
     // check
     validTopicName(validTopicName);
-    const isHas = await this.storeClient.topic.has(topicName);
+    const isHas = await this.storeClient.hasTopic(topicName);
     if (!isHas) throw new Error(`Can't find topic with name '${topicName}'`);
     try {
-      const result = await this.storeClient.topic.subscription(topicName, listener);
+      const result = await this.storeClient.subscription(topicName, listener);
       return result;
     } catch (error) {
       Logger.error(error);
@@ -39,11 +39,11 @@ export class Consumer {
   public async unSubscription(topicName: string, listenerName: string) {
     // check
     validTopicName(validTopicName);
-    const isHas = await this.storeClient.topic.has(topicName);
+    const isHas = await this.storeClient.hasTopic(topicName);
     if (!isHas) throw new Error(`Can't find topic with name '${topicName}'`);
 
     try {
-      const result = await this.storeClient.topic.unSubscription(topicName, listenerName);
+      const result = await this.storeClient.unSubscription(topicName, listenerName);
       return result;
     } catch (error) {
       Logger.error(error);

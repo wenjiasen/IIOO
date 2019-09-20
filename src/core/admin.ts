@@ -1,14 +1,14 @@
 import { Logger } from '../utils/logger';
 import { validTopicName } from './common';
-import { IStore } from './store';
+import { IAdminStore } from './store/admin';
 import { ITopicNew, ITopicInfo } from './topic';
 
 class Admin {
   /**
    * store
    */
-  private storeClient: IStore;
-  constructor(store: IStore) {
+  private storeClient: IAdminStore;
+  constructor(store: IAdminStore) {
     this.storeClient = store;
   }
   /**
@@ -21,12 +21,12 @@ class Admin {
       validTopicName(newTopic.name);
 
       // check exists
-      const oldTopic = await this.storeClient.topic.findByName(newTopic.name);
+      const oldTopic = await this.storeClient.findTopicByName(newTopic.name);
       if (oldTopic) {
         throw new Error(`${newTopic.name} already exists`);
       }
 
-      const topic = await this.storeClient.topic.create(newTopic);
+      const topic = await this.storeClient.createTopic(newTopic);
       return topic;
     } catch (error) {
       Logger.error(error);
@@ -39,7 +39,7 @@ class Admin {
   public async deleteTopic(name: string): Promise<boolean> {
     try {
       validTopicName(name);
-      const result = await this.storeClient.topic.delete(name);
+      const result = await this.storeClient.deleteTopic(name);
       return result;
     } catch (error) {
       Logger.error(error);
@@ -54,7 +54,7 @@ class Admin {
   public async describeTopic(name: string): Promise<ITopicInfo | undefined> {
     try {
       validTopicName(name);
-      const result = this.storeClient.topic.findByName(name);
+      const result = this.storeClient.findTopicByName(name);
       return result;
     } catch (error) {
       Logger.error(error);
@@ -69,7 +69,7 @@ class Admin {
   public async listTopics(page: number = 1, pageSize: number = 10): Promise<ITopicInfo[]> {
     let results: ITopicInfo[] = [];
     try {
-      results = await this.storeClient.topic.list({
+      results = await this.storeClient.listTopic({
         offset: (page - 1) * pageSize,
         limit: pageSize,
       });
@@ -85,7 +85,7 @@ class Admin {
    */
   public async deleteJob(id: string): Promise<boolean> {
     try {
-      const result = await this.storeClient.job.delete(id);
+      const result = await this.storeClient.deleteJob(id);
       return result;
     } catch (error) {
       Logger.error(error);

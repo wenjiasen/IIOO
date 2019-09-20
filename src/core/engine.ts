@@ -1,17 +1,17 @@
 import { Queue } from './queue';
-import { IStore } from './store';
+import { IEngineStore } from './store/engine';
 
 export class Engine {
-  private readonly sotre: IStore;
+  private readonly sotre: IEngineStore;
   private readonly queues: Queue[];
-  constructor(store: IStore) {
+  constructor(store: IEngineStore) {
     this.sotre = store;
     this.queues = [];
   }
   public async start() {
     try {
       // 获取所有的topic
-      const topics = await this.sotre.topic.list();
+      const topics = await this.sotre.getTopicList();
       // 依次为topic建立queue
       for (const topic of topics) {
         this.queues.push(new Queue(this.sotre, topic));
