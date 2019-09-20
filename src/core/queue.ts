@@ -13,6 +13,7 @@ enum QueueEvent {
 export class Queue {
   private core!: EventEmitter;
   private inGetMore = false;
+  private inLoop = false;
   private jobs: IJobInfo[] = [];
   private workers: QueueWorker[] = [];
   private store: IStore;
@@ -24,16 +25,12 @@ export class Queue {
     this.store = store;
     this.topic = topic;
     this.bindWorker();
-
-    process.nextTick(() => {
-      // 如果没有可执行的任务，则继续出发Loop
-      if (!this.inGetMore && this.jobs.length === 0) {
-        this.loop();
-      }
-    });
+    setInterval(this.loop, 10000);
   }
 
   public loop() {
+    if (this.inLoop) return;
+    this.inLoop = true;
     this.core.emit(QueueEvent.Loop);
   }
 
@@ -91,6 +88,7 @@ export class Queue {
   }
 
   private async onLoop() {
+    this.inLoop = false;
     // TODO:目前的处理方式无法保证任务执行顺序，待优化
     const freeWoker = this.getFreeWorker();
     if (!freeWoker) return;
