@@ -3,7 +3,7 @@ import { validTopicName } from './common';
 import { IAdminStore } from './store/admin';
 import { ITopicNew, ITopicInfo } from './topic';
 
-class Admin {
+export class Admin {
   /**
    * store
    */
