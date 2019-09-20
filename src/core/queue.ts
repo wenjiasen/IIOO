@@ -24,6 +24,13 @@ export class Queue {
     this.store = store;
     this.topic = topic;
     this.bindWorker();
+
+    process.nextTick(() => {
+      // 如果没有可执行的任务，则继续出发Loop
+      if (!this.inGetMore && this.jobs.length === 0) {
+        this.loop();
+      }
+    });
   }
 
   public loop() {
