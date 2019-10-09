@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { QueueWorker } from './worker';
 import { Logger } from '../utils/logger';
 import { IEngineStore } from './store/engine';
-import { IJobInfo, JobState } from './job';
+import { IJobInfo, JobStatus } from './job';
 import { ITopicInfo } from './topic';
 enum QueueEvent {
   GetMoreJobs = 'getMoreJobs',
